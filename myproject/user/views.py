@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from .forms import SignUpForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 @login_required
 def home(request):
@@ -12,12 +13,17 @@ def signup_view(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            return redirect('signup')
+            messages.success(request, '회원가입에 성공했어요! 로그인 페이지로 이동합니다.')
+            return redirect('login')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form':form})
 
 def login_view(request):
+
+    if request.user.is_authenticated:
+        return redirect('home')
+
     if request.method == 'POST':
         form = AuthenticationForm(request, request.POST)
         if form.is_valid():
@@ -27,3 +33,7 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form':form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
