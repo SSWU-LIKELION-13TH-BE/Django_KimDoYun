@@ -1,3 +1,5 @@
 venv
 *.pyc
 conf.py
+db.sqlite3
+media/
