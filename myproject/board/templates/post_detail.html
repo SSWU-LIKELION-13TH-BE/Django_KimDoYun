@@ -1,3 +1,5 @@
+{% load static %}
+
 <h2>{{ post.title }}</h2>
 <p>작성자 : {{ post.author.username }}</p>
 <p>{{ post.content }}</p>
@@ -8,3 +10,61 @@
 {% if post.image %}
     <img src="{{ post.image.url }}" alt="첨부 이미지">
 {% endif %}
+
+<h3>댓글 작성</h3>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">댓글 작성</button>
+</form>
+
+<!-- 댓글 목록 -->
+<h3>댓글 목록</h3>
+<ul>
+    {% for comment in comments %}
+        {% if not comment.parent %}
+        <li>
+            <strong>{{ comment.user.username }}</strong> : {{ comment.content }}
+            <em>({{ comment.created_at }})</em>
+
+            <!-- 답글 달기 버튼 -->
+            <button onclick="toggleReplyForm('{{ comment.id }}')">답글 달기</button>
+
+            <!-- 대댓글 작성 폼 (숨김) -->
+            <div id="reply-form-{{ comment.id }}" style="display: none; margin-top: 5px;">
+                <form method="POST" action="{% url 'add_reply' post.pk comment.id %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">작성</button>
+                </form>
+            </div>
+
+            <!-- 대댓글 리스트 -->
+            <ul>
+                {% for reply in comments %}
+                    {% if reply.parent == comment %}
+                    <li style="margin-left: 20px;">
+                        ↳ <strong>{{ reply.user.username }}</strong> : {{ reply.content }}
+                        <em>({{ reply.created_at }})</em>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </li>
+        {% endif %}
+    {% empty %}
+        <li>댓글이 없습니다.</li>
+    {% endfor %}
+</ul>
+
+<script>
+function toggleReplyForm(commentId) {
+    const form = document.getElementById('reply-form-' + commentId);
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+    } else {
+        form.style.display = 'none';
+    }
+}
+</script>
+

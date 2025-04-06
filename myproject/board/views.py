@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post
-from .forms import PostForm
+from .models import Post, Comment
+from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 @login_required
 def create_post(request):
@@ -22,4 +23,41 @@ def post_list(request):
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    return render(request, 'post_detail.html', {'post':post})
+    comments = post.comments.all()
+
+    if request.method=='POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.date_posted = timezone.now()
+            comment.save()
+            return redirect('post_detail', pk=post.pk)
+    else:
+        form = CommentForm()
+
+    return render(request, 'post_detail.html', {
+        'post':post,
+        'comments':comments,
+        'form':form,
+        
+        })
+
+def add_reply(request, pk, comment_id):
+    post = get_object_or_404(Post, pk=pk)
+    parent_comment = get_object_or_404(Comment, pk=comment_id)
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.user = request.user
+            reply.post = post
+            reply.parent = parent_comment
+            reply.save()
+            return redirect('post_detail',pk=pk)
+    else:
+        form = CommentForm()
+
+    return redirect('post_detail', pk=pk)
