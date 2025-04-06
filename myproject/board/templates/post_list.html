@@ -1,0 +1,8 @@
+<h2>글 목록</h2>
+{% for post in posts %}
+    <div>
+        <h3><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
+        <p>작성자 : {{ post.author.username }}</p>
+        <p>{{ post.created_at }}</p>
+    </div>
+{% endfor %}
