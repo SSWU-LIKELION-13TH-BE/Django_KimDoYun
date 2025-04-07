@@ -10,6 +10,18 @@
     <img src="{{ post.image.url }}" alt="첨부 이미지">
 {% endif %}
 
+<form method="POST" action="{% url 'toggle_like' post.pk %}">
+    {% csrf_token %}
+    {% if is_liked %}
+        <button type="submit">좋아요 취소 ❤️</button>
+    {% else %}
+        <button type="submit">좋아요 👍</button>
+    {% endif %}
+    <p>{{ like_count }}명이 이 게시물을 좋아합니다.</p>
+</form>
+
+
+
 <h3>댓글 작성</h3>
 <form method="POST">
     {% csrf_token %}
@@ -25,7 +37,16 @@
         <li>
             <strong>{{ comment.user.username }}</strong> : {{ comment.content }}
             <em>({{ comment.created_at }})</em>
-
+            
+            <!-- 💖 댓글 좋아요 버튼 -->
+            <form method="POST" action="{% url 'toggle_comment_like' post.pk comment.id %}">
+                {% csrf_token %}
+                {% if comment.is_liked %}
+                    <button type="submit">❤️ 좋아요 취소</button>
+                {% else %}
+                    <button type="submit">👍 좋아요</button>
+                {% endif %}
+            </form>
             <!-- 답글 달기 버튼 -->
             <button onclick="toggleReplyForm('{{ comment.id }}')">답글 달기</button>
 
@@ -45,6 +66,16 @@
                     <li style="margin-left: 20px;">
                         ↳ <strong>{{ reply.user.username }}</strong> : {{ reply.content }}
                         <em>({{ reply.created_at }})</em>
+
+                        <!-- 💬 대댓글 좋아요 버튼 추가 -->
+                        <form method="POST" action="{% url 'toggle_comment_like' post.pk reply.id %}">
+                            {% csrf_token %}
+                            {% if reply.is_liked %}
+                                <button type="submit">❤️ 좋아요 취소</button>
+                            {% else %}
+                                <button type="submit">👍 좋아요</button>
+                            {% endif %}
+                        </form> 
                     </li>
                     {% endif %}
                 {% endfor %}
