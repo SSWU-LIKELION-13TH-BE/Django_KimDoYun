@@ -1,7 +1,6 @@
 from django.urls import path
 from .views import post_list, create_post, post_detail, add_reply, toggle_like, toggle_comment_like
 
-
 urlpatterns = [
 
     path('', post_list, name='post_list'),
