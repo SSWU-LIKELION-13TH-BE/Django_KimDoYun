@@ -40,6 +40,8 @@ def post_detail(request, pk):
     like_count = Like.objects.filter(post=post).count()
 
     if request.method=='POST':
+        if not request.user.is_authenticated:
+            return redirect('login')
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
@@ -78,6 +80,7 @@ def add_reply(request, pk, comment_id):
 
     return redirect('post_detail', pk=pk)
 
+@login_required
 def toggle_like(request, pk):
     post = get_object_or_404(Post,pk=pk)
     like, created = Like.objects.get_or_create(user=request.user, post=post)
@@ -87,6 +90,7 @@ def toggle_like(request, pk):
 
     return redirect('post_detail', pk=pk)
 
+@login_required
 def toggle_comment_like(request, pk, comment_id):
     comment = get_object_or_404(Comment,pk=comment_id)
     like, created = CommentLike.objects.get_or_create(user=request.user, comment=comment)
