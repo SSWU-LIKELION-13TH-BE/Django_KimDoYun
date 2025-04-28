@@ -1,0 +1,30 @@
+
+{% block content %}
+<h1>게시물 검색</h1>
+
+<form method="get" action="{% url 'search' %}">
+    {{ form.as_p }}
+    <button type="submit">검색</button>
+</form>
+
+<hr>
+
+{% if query %}
+    <h2>"{{ query }}" 검색 결과</h2>
+    
+    {% if results %}
+        <ul>
+            {% for post in results %}
+                <li>
+                    <a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>검색 결과가 없습니다.</p>
+    {% endif %}
+{% else %}
+    <p>검색어를 입력해 주세요.</p>
+{% endif %}
+
+{% endblock %}
