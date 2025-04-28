@@ -31,6 +31,8 @@ def post_list(request):
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comments = post.comments.all()
+    post.view_count += 1  # 조회수 증가
+    post.save()  # 변경사항 저장
 
     # 댓글 좋아요 상태 확인
     if request.user.is_authenticated:
