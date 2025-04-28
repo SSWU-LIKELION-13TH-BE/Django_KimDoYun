@@ -3,6 +3,7 @@ from .models import Post, Comment, Like, CommentLike
 from .forms import PostForm, CommentForm, SearchForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.db.models import Count
 
 @login_required
 def create_post(request):
@@ -18,8 +19,14 @@ def create_post(request):
     return render(request, 'create_post.html', {'form':form})
 
 def post_list(request):
-    posts = Post.objects.all()
-    return render(request, 'post_list.html', {'posts':posts})
+    sort = request.GET.get('sort', 'recent')  # 기본은 'recent'
+    if sort == 'popular':
+        posts = Post.objects.annotate(like_count=Count('likes')).order_by('-like_count','-created_at')  # 인기순 (like_count 기준)
+    else:
+        posts = Post.objects.all().order_by('-created_at')  # 최신순 (created_at 기준)
+
+    return render(request, 'post_list.html', {'posts': posts, 'sort': sort})
+
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
