@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment, Like, CommentLike
-from .forms import PostForm, CommentForm
+from .forms import PostForm, CommentForm, SearchForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
@@ -55,7 +55,7 @@ def post_detail(request, pk):
 @login_required
 def add_comment(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    
+
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -108,3 +108,20 @@ def toggle_comment_like(request, pk, comment_id):
         like.delete()
 
     return redirect('post_detail', pk=pk)
+
+def search(request):
+    form = SearchForm()
+    query = None
+    results = []
+
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Post.objects.filter(title__icontains=query)
+
+    return render(request, 'search.html', {
+        'form': form,
+        'query': query,
+        'results': results,
+    })

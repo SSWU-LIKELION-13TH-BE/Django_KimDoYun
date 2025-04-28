@@ -1,4 +1,5 @@
 <h2>글 목록</h2>
+<a href="{% url 'search' %}">🔍글 검색하기</a>
 {% for post in posts %}
     <div>
         <h3><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
