@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment, Like, CommentLike
-from .forms import PostForm, CommentForm
+from .forms import PostForm, CommentForm, SearchForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.db.models import Count
 
 @login_required
 def create_post(request):
@@ -18,13 +19,22 @@ def create_post(request):
     return render(request, 'create_post.html', {'form':form})
 
 def post_list(request):
-    posts = Post.objects.all()
-    return render(request, 'post_list.html', {'posts':posts})
+    sort = request.GET.get('sort', 'recent')  # 기본은 'recent'
+    if sort == 'popular':
+        posts = Post.objects.annotate(like_count=Count('likes')).order_by('-like_count','-created_at')  # 인기순 (like_count 기준)
+    else:
+        posts = Post.objects.all().order_by('-created_at')  # 최신순 (created_at 기준)
+
+    return render(request, 'post_list.html', {'posts': posts, 'sort': sort})
+
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comments = post.comments.all()
+    post.view_count += 1  # 조회수 증가
+    post.save()  # 변경사항 저장
 
+    # 댓글 좋아요 상태 확인
     if request.user.is_authenticated:
         liked_comment_ids = set(
         CommentLike.objects.filter(user=request.user, comment__in=comments).values_list('comment_id', flat=True)
@@ -35,23 +45,12 @@ def post_detail(request, pk):
     for comment in comments:
         comment.is_liked = comment.id in liked_comment_ids
 
-
-    is_liked = Like.objects.filter(post=post, user=request.user).exists if request.user.is_authenticated else False
+    #게시물 좋아요 상태 확인
+    is_liked = Like.objects.filter(post=post, user=request.user).exists() if request.user.is_authenticated else False
     like_count = Like.objects.filter(post=post).count()
 
-    if request.method=='POST':
-        if not request.user.is_authenticated:
-            return redirect('login')
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = post
-            comment.user = request.user
-            comment.date_posted = timezone.now()
-            comment.save()
-            return redirect('post_detail', pk=post.pk)
-    else:
-        form = CommentForm()
+    #댓글 작성 폼 렌더링
+    form = CommentForm()
 
     return render(request, 'post_detail.html', {
         'post':post,
@@ -61,6 +60,25 @@ def post_detail(request, pk):
         'like_count': like_count,
         
         })
+
+@login_required
+def add_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.date_posted = timezone.now()
+            comment.save()
+            return redirect('post_detail', pk=post.pk)  
+    else:
+        form = CommentForm()
+
+    return render(request, 'post_detail.html', {'form': form})
+
 
 def add_reply(request, pk, comment_id):
     post = get_object_or_404(Post, pk=pk)
@@ -99,3 +117,20 @@ def toggle_comment_like(request, pk, comment_id):
         like.delete()
 
     return redirect('post_detail', pk=pk)
+
+def search(request):
+    form = SearchForm()
+    query = None
+    results = []
+
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Post.objects.filter(title__icontains=query)
+
+    return render(request, 'search.html', {
+        'form': form,
+        'query': query,
+        'results': results,
+    })

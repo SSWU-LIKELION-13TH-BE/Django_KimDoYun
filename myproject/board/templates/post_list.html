@@ -1,8 +1,15 @@
 <h2>글 목록</h2>
+<div>
+    <a href="?sort=recent">최신순</a> | <a href="?sort=popular">인기순</a>
+</div>
+
+<a href="{% url 'search' %}">🔍글 검색하기</a>
 {% for post in posts %}
     <div>
         <h3><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
         <p>작성자 : {{ post.author.username }}</p>
         <p>{{ post.created_at }}</p>
+        <p>좋아요 수 : {{ post.likes.count }}</p> <!-- 좋아요 수 표시 -->
     </div>
 {% endfor %}
+

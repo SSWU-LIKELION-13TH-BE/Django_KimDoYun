@@ -19,12 +19,13 @@
         <button type="submit">좋아요 👍</button>
     {% endif %}
     <p>{{ like_count }}명이 이 게시물을 좋아합니다.</p>
+    <p>조회수: {{ post.view_count }}</p>
 </form>
 
 
 
 <h3>댓글 작성</h3>
-<form method="POST">
+<form method="POST" action="{% url 'add_comment' post.pk %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">댓글 작성</button>
