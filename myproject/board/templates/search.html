@@ -2,11 +2,11 @@
 {% block content %}
 <h1>게시물 검색</h1>
 
-<form method="get" action="{% url 'search' %}">
+<form method="get" action="{% url 'board:search' %}">
     {{ form.as_p }}
     <button type="submit">검색</button>
 </form>
-
+<a href="{% url 'home' %}">🏠홈으로 가기</a>
 <hr>
 
 {% if query %}
