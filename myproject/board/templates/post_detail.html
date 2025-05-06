@@ -11,7 +11,7 @@
     <img src="{{ post.image.url }}" alt="첨부 이미지">
 {% endif %}
 
-<form method="POST" action="{% url 'toggle_like' post.pk %}">
+<form method="POST" action="{% url 'board:toggle_like' post.pk %}">
     {% csrf_token %}
     {% if is_liked %}
         <button type="submit">좋아요 취소 ❤️</button>
@@ -25,7 +25,7 @@
 
 
 <h3>댓글 작성</h3>
-<form method="POST" action="{% url 'add_comment' post.pk %}">
+<form method="POST" action="{% url 'board:add_comment' post.pk %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">댓글 작성</button>
@@ -41,7 +41,7 @@
             <em>({{ comment.created_at }})</em>
             
             <!-- 💖 댓글 좋아요 버튼 -->
-            <form method="POST" action="{% url 'toggle_comment_like' post.pk comment.id %}">
+            <form method="POST" action="{% url 'board:toggle_comment_like' post.pk comment.id %}">
                 {% csrf_token %}
                 {% if comment.is_liked %}
                     <button type="submit">❤️ 좋아요 취소</button>
@@ -54,7 +54,7 @@
 
             <!-- 대댓글 작성 폼 (숨김) -->
             <div id="reply-form-{{ comment.id }}" style="display: none; margin-top: 5px;">
-                <form method="POST" action="{% url 'add_reply' post.pk comment.id %}">
+                <form method="POST" action="{% url 'board:add_reply' post.pk comment.id %}">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit">작성</button>
@@ -70,7 +70,7 @@
                         <em>({{ reply.created_at }})</em>
 
                         <!-- 💬 대댓글 좋아요 버튼 추가 -->
-                        <form method="POST" action="{% url 'toggle_comment_like' post.pk reply.id %}">
+                        <form method="POST" action="{% url 'board:toggle_comment_like' post.pk reply.id %}">
                             {% csrf_token %}
                             {% if reply.is_liked %}
                                 <button type="submit">❤️ 좋아요 취소</button>

@@ -13,7 +13,7 @@ def create_post(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            return redirect('post_list')
+            return redirect('board:post_list')
     else:
         form = PostForm()
     return render(request, 'create_post.html', {'form':form})
@@ -73,7 +73,7 @@ def add_comment(request, pk):
             comment.user = request.user
             comment.date_posted = timezone.now()
             comment.save()
-            return redirect('post_detail', pk=post.pk)  
+            return redirect('board:post_detail', pk=post.pk)  
     else:
         form = CommentForm()
 
@@ -92,11 +92,11 @@ def add_reply(request, pk, comment_id):
             reply.post = post
             reply.parent = parent_comment
             reply.save()
-            return redirect('post_detail',pk=pk)
+            return redirect('board:post_detail',pk=pk)
     else:
         form = CommentForm()
 
-    return redirect('post_detail', pk=pk)
+    return redirect('board:post_detail', pk=pk)
 
 @login_required
 def toggle_like(request, pk):
@@ -106,7 +106,7 @@ def toggle_like(request, pk):
     if not created:
         like.delete()
 
-    return redirect('post_detail', pk=pk)
+    return redirect('board:post_detail', pk=pk)
 
 @login_required
 def toggle_comment_like(request, pk, comment_id):
@@ -116,7 +116,7 @@ def toggle_comment_like(request, pk, comment_id):
     if not created:
         like.delete()
 
-    return redirect('post_detail', pk=pk)
+    return redirect('board:post_detail', pk=pk)
 
 def search(request):
     form = SearchForm()
@@ -134,3 +134,26 @@ def search(request):
         'query': query,
         'results': results,
     })
+
+def mypage(request):
+    return render(request, 'user/mypage.html')
+
+@login_required
+def post_edit(request, pk):
+    post = get_object_or_404(Post, pk=pk, author=request.user)
+    if request.method == 'POST':
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('board:post_detail', pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'board/post_edit.html', {'form':form, 'post':post})
+
+@login_required
+def post_delete(request, pk):
+    post = get_object_or_404(Post, pk=pk, author=request.user)
+    if request.method == 'POST':
+        post.delete()
+        return redirect('board:post_list')
+    return render(request, 'board/post_delete.html', {'post':post})

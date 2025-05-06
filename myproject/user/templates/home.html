@@ -8,10 +8,12 @@
     {% if user.is_authenticated %}
         <h1>안녕하세요, {{ user.username }}님!</h1>
         <p>로그인에 성공하셨습니다.</p>
-        <a href="{% url 'logout' %}">로그아웃</a>
-        <a href="{% url 'create_post' %}">✍️글쓰러 가기</a>
-        <a href="{% url 'post_list' %}">📚글목록 보기</a>
-        <a href="{% url 'search' %}">🔍글 검색하기</a>
+        <a href="{% url 'logout' %}">⚠️로그아웃</a>
+        <a href="{% url 'board:create_post' %}">✍️글쓰러 가기</a>
+        <a href="{% url 'board:post_list' %}">📚글목록 보기</a>
+        <a href="{% url 'board:search' %}">🔍글 검색하기</a>
+        <a href="{% url 'mypage' %}">🔒마이페이지</a>
+        <a href="{% url 'guestbook_list' request.user.username %}">📫방명록 보기</a>
     {% else %}
         <h1>환영합니다!</h1>
         <p>로그인이 필요합니다.</p>

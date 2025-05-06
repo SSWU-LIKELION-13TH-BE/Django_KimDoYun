@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ owner.username }}님의 방명록</title>
+</head>
+<body>
+    <h1>{{ owner.username }}님의 방명록</h1>
+
+    {% if guestbooks %}
+        <ul>
+        {% for guestbook in guestbooks %}
+            <li>
+                <strong>{{ guestbook.writer.username }}:</strong> {{ guestbook.content }}
+                <br>
+                <small>{{ guestbook.created_at }}</small>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>방명록이 없습니다.</p>
+    {% endif %}
+
+    <a href="{% url 'guestbook_write' username=owner.username %}">방명록 작성</a>
+</body>
+</html>
