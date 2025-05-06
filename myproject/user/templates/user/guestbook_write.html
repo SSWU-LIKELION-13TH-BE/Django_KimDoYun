@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>방명록 작성</title>
+</head>
+<body>
+    <h1>{{ owner.username }}님의 방명록을 작성해주세요!</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">작성하기</button>
+    </form>
+
+    <a href="{% url 'home' %}">🏠홈으로 가기</a>
+</body>
+</html>
