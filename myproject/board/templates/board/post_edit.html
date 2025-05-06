@@ -1,0 +1,7 @@
+<h2>게시글 수정</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">수정 완료</button>
+</form>
+<a href="{% url 'board:post_detail' pk=post.pk %}">돌아가기</a>

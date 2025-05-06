@@ -1,0 +1,35 @@
+
+{% load static %}
+{% block content %}
+<h2>마이페이지</h2>
+
+<!-- 성공 메시지 출력 -->
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<hr>
+
+<!-- 회원 정보 수정 폼 -->
+<h3>회원 정보 수정</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ user_form.as_p }}
+    <button type="submit" name="update_info">수정하기</button>
+</form>
+
+<hr>
+
+<!-- 비밀번호 변경 폼 -->
+<h3>비밀번호 변경</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ pwd_form.as_p }}
+    <button type="submit" name="update_password">비밀번호 변경</button>
+</form>
+
+{% endblock %}
