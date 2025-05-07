@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>유저 목록</title></head>
+<body>
+    <h1>유저 목록</h1>
+    <ul>
+        {% for user in users %}
+            <li>
+                {{ user.username }} |
+                <a href="{% url 'guestbook_list' username=user.username %}">방명록 보기</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

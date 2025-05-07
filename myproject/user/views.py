@@ -97,3 +97,8 @@ def guestbook_write(request, username):
         form = GuestBookForm()
 
     return render(request, 'user/guestbook_write.html', {'form': form, 'owner': owner})
+
+@login_required
+def user_list(request):
+    users = CustomUser.objects.exclude(id=request.user.id)
+    return render(request, 'user/user_list.html', {'users':users})
