@@ -22,6 +22,7 @@
         <button type="submit">로그인</button>
     </form>
     <a href="{% url 'social:begin' 'kakao' %}?next={{ request.path }}">카카오 로그인</a>
+    <a href="{% url 'social:begin' 'naver' %}?next=/">네이버 로그인</a>
     <a href="{% url 'password_reset' %}">비밀번호 찾기</a>
 </body>
 </html>
