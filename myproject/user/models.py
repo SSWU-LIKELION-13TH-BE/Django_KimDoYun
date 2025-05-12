@@ -5,7 +5,7 @@ from django.conf import settings
 # Create your models here.
 
 class CustomUser(AbstractUser):
-    nickname = models.CharField(max_length=15, unique=True)
+    nickname = models.CharField(max_length=15, unique=False)
     groups = models.ManyToManyField(Group, related_name="customuser_set", blank=True)
     user_permissions=models.ManyToManyField(Permission, related_name="customeuser_permissions_set",blank=True)
 

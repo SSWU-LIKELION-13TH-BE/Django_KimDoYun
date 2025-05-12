@@ -39,8 +39,32 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django', 
 
 ]
+
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.kakao.KakaoOAuth2', 
+    'django.contrib.auth.backends.ModelBackend',
+
+)
+
+LOGIN_URL = 'user/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+from .conf import SOCIAL_AUTH_KAKAO_KEY
+
+SOCIAL_AUTH_KAKAO_KEY = SOCIAL_AUTH_KAKAO_KEY 
+SOCIAL_AUTH_KAKAO_REDIRECT_URI = 'http://localhost:8000/oauth/complete/kakao/'
+
+SOCIAL_AUTH_KAKAO_SCOPE = ['profile_nickname']
+SOCIAL_AUTH_KAKAO_PROFILE_EXTRA_PARAMS = {'property_keys': ['kakao_account.profile.nickname']}
+
+LOGIN_REDIRECT_URL = '/'  
+LOGOUT_REDIRECT_URL = '/'  
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
