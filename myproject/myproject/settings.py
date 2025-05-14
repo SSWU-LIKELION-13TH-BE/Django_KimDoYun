@@ -39,8 +39,43 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django', 
 
 ]
+
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.kakao.KakaoOAuth2', 
+    'social_core.backends.naver.NaverOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+
+)
+
+LOGIN_URL = 'user/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+from .conf import SOCIAL_AUTH_KAKAO_KEY, SOCIAL_AUTH_NAVER_KEY, SOCIAL_AUTH_NAVER_SECRET
+
+SOCIAL_AUTH_KAKAO_KEY = SOCIAL_AUTH_KAKAO_KEY 
+SOCIAL_AUTH_KAKAO_REDIRECT_URI = 'http://localhost:8000/oauth/complete/kakao/'
+
+SOCIAL_AUTH_KAKAO_SCOPE = ['profile_nickname']
+SOCIAL_AUTH_KAKAO_PROFILE_EXTRA_PARAMS = {'property_keys': ['kakao_account.profile.nickname']}
+
+SOCIAL_AUTH_NAVER_KEY = SOCIAL_AUTH_NAVER_KEY
+SOCIAL_AUTH_NAVER_SECRET = SOCIAL_AUTH_NAVER_SECRET
+SOCIAL_AUTH_NAVER_CALLBACK_URL = 'http://127.0.0.1:8000/auth/complete/naver/'
+
+SOCIAL_AUTH_NAVER_SCOPE = ['nickname', 'email']
+SOCIAL_AUTH_NAVER_PROFILE_EXTRA_PARAMS = {
+    'response_type': 'code',
+}
+
+LOGIN_REDIRECT_URL = '/'  
+LOGOUT_REDIRECT_URL = '/'  
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
